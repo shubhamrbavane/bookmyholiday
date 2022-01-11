@@ -1,0 +1,107 @@
+#%RAML 1.0
+title: pro-bookmyholiday-API
+
+types:
+  Flight: !include Types/flightWithIdDataType.raml
+  Flights: !include Types/allFlightData.raml
+  FlightBookingDetails: !include Types/bookFlightDataType.raml
+  Cars: !include Types/allCarsDataType.raml
+  Car: !include Types/carWithNameDataType.raml
+  CabBookingDetails: !include Types/bookCarDataType.raml
+  BookedCab: !include Types/bookCarResponseDataType.raml
+
+  
+
+
+/flights:  
+  get:
+    queryParameters:
+      source:
+        required: false
+      destination:
+        required: false
+        enum:
+          - PUN
+          - MUM
+          - DEL
+    responses:
+      200:
+        body:
+          application/json:
+            type: Flights[]
+            examples:
+              output: !include examples/allFlightsExample.raml
+              
+
+  post:
+    body:
+      application/json:
+        type: FlightBookingDetails
+        examples:
+          input: !include examples/bookFlightExample.raml
+    responses:
+      201:
+        body:
+          application/json:
+            examples:
+              output: !include examples/bookFlightResponse.raml
+            
+
+  /{airline}:
+    get:
+      queryParameters:
+        source:
+          required: false
+        destination:
+          required: false
+      responses:
+        200:
+          body:
+            application/json:
+              type: Flight
+              examples:
+                output: !include examples/flightwithID.raml
+
+/cars:
+  get:
+    queryParameters:
+      source:
+        required: false
+      destination:
+        required: false
+    responses:
+      200:
+        body:
+          application/json:
+            type: Cars[]
+            examples:
+              output: !include examples/allCarsExample.raml
+
+  post:
+    body:
+      application/json:
+        type: CabBookingDetails
+        examples:
+          input: !include examples/bookCarExample.raml
+    responses:
+      201:
+        body:
+          application/json:
+            type: BookedCab
+            examples:
+              output: !include examples/bookCarResponseExample.raml
+
+  /{carName}:
+    get:
+      queryParameters:
+        source:
+          required: false
+        destination:
+          required: false
+      responses:
+        200:
+          body:
+            application/json:
+              type: Car
+              examples:
+                output: !include examples/carWithNameExample.raml

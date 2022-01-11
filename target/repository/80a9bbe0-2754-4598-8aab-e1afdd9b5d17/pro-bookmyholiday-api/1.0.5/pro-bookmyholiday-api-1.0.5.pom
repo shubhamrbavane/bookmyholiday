@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>80a9bbe0-2754-4598-8aab-e1afdd9b5d17</groupId>
+  <artifactId>pro-bookmyholiday-api</artifactId>
+  <version>1.0.5</version>
+  <name>pro-bookmyholiday-API</name>
+  <properties>
+    <classifier>raml</classifier>
+    <main>pro-bookmyholiday-api.raml</main>
+    <originalFormatVersion>1.0</originalFormatVersion>
+    <apiVersion>v1</apiVersion>
+    <projectId>a5fa0a97-703a-437e-beac-1e524b8e1ba0</projectId>
+    <branchId>master</branchId>
+    <commitId>c6b501f068fa1b98df05b8dd321583e58a11ace6</commitId>
+    <keywords/>
+    <type>rest-api</type>
+    <mainFile>pro-bookmyholiday-api.raml</mainFile>
+  </properties>
+  <repositories>
+    <repository>
+      <id>anypoint-exchange</id>
+      <url>https://maven.anypoint.mulesoft.com/api/v3/maven</url>
+    </repository>
+  </repositories>
+</project>

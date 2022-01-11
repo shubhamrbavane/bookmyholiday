@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="33fe4024-9602-49fc-8efe-4528ee939716" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}"  connectionIdleTimeout="300000"/>
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="0aa30b58-f81a-4ec5-87ba-0e44e61e3677" >
+		<http:request-connection host="${url.host}" connectionIdleTimeout="300000000"/>
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="f55d8e6f-b860-472e-b17f-4481f950c0fc" file="config.yaml" />
+</mule>
