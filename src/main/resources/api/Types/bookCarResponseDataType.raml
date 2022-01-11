@@ -1,0 +1,26 @@
+#%RAML 1.0 DataType
+
+type: object
+properties:
+  passengerDetails:
+    type: object
+    properties:
+      firstName: string
+      lastName: string
+      age: integer
+      contactDetails:
+        type: object
+        properties:
+          mobileNumber: integer
+          emailId: string
+  carDetails:
+    type: object
+    properties:
+      carName: string
+      carNumber: string
+      carType: string
+      carModel: string
+      price: integer
+      noOfSeats: integer
+      source: string
+      destination: string
