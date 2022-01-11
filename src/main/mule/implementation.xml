@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="dd0a44a5-e17f-4b58-a483-3d534b2015dd" >
+		<wsc:connection wsdlLocation="HotelBooking.wsdl" service="HotelBooking" port="HotelBookingSOAP" address="http://sys-flights-api-service.us-e2.cloudhub.io/HotelBooking" >
+			<wsc:web-service-security actor="http://schemas.xmlsoap.org/soap/actor/next" />
+		</wsc:connection>
+	</wsc:config>
+	<flow name="getAllFlights" doc:id="6ee15941-db0d-4057-ab44-bd80700f88df" >
+		<http:request method="GET" doc:name="fetchAllFlights" doc:id="9987d5d9-ceb6-4870-8390-5c95bd00c38b" config-ref="HTTP_Request_configuration" url="http://sys-flight-app.us-e2.cloudhub.io/api/flights">
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="b5527d2c-70cb-4725-902a-d7a261216831" />
+	</flow>
+	<flow name="getAllCabs" doc:id="2e66a442-0ee7-421e-ba86-7777024c7185" >
+		<http:request method="GET" doc:name="fetchAllCabs" doc:id="8a8a27cc-0549-45f0-9a4c-606d90a7360c" config-ref="HTTP_Request_configuration" url="http://sys-car-api.us-e2.cloudhub.io/api/cars" responseTimeout="90000000">
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="2e0a41c0-d17c-425c-b33c-96fd69be42e7" />
+	</flow>
+	<flow name="getAllHotels" doc:id="55ac4c04-9946-451c-be9a-d49ddd6d36d1" initialState="started">
+		<ee:transform doc:name="Transform Message" doc:id="84e2c16b-b2e9-41c6-97aa-889cd7b63dd8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.example.org/HotelBooking/
+---
+{
+	ns0#GET_Hotels: {
+		City: attributes.queryParams.city
+		
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="c07501f1-f4f4-488e-9de9-48853cc06eed" config-ref="Web_Service_Consumer_Config" operation="GET_Hotels">
+			<wsc:message >
+				<wsc:body ><![CDATA[#[output application/xml
+ns ns0 http://www.example.org/HotelBooking/
+---
+{
+	ns0#GET_Hotels: {
+		City: payload.ns0#GET_Hotels.City
+	}
+}]]]></wsc:body>
+			</wsc:message>
+		</wsc:consume>
+		<ee:transform doc:name="Transform Message" doc:id="d5d76f19-aa9d-488a-b0b6-a1ac2e4c7e37" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.example.org/HotelBooking/
+---
+{
+	roomID: (1 default 0) + (payload.body.ns0#GET_HotelsResponse.Hotel_ID default 0),
+	hotelName: (payload.body.ns0#GET_HotelsResponse.Hotel_Name default ""),
+	roomType:  (payload.body.ns0#GET_HotelsResponse.Room_Type default ""),
+	price:  (payload.body.ns0#GET_HotelsResponse.Price default 0),
+	rating: (payload.body.ns0#GET_HotelsResponse.Rating default 0),
+	breakfast:  (payload.body.ns0#GET_HotelsResponse.Breakfast default ""),
+	cancellation:  (payload.body.ns0#GET_HotelsResponse.Cancellation default "")
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2f222960-6eee-45ee-b291-5924d319e870" />
+	</flow>
+	<flow name="getAirlineByName" doc:id="2c456c10-5298-4919-8849-69211d78c9de" >
+		<http:request method="GET" doc:name="fetchFlightByAirline" doc:id="ad8d152e-c901-427d-a269-d96c614b978a" config-ref="HTTP_Request_configuration" url="http://sys-flight-app.us-e2.cloudhub.io/api/flights/{airline}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"airline" : attributes.uriParams.airline
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="f732c136-e714-40c1-b5b7-ec6c1f873533" />
+	</flow>
+	<flow name="getCabByCompanyName" doc:id="176d47b2-f6f1-4545-afb2-b283317cef97" >
+		<http:request method="GET" doc:name="Request" doc:id="3b649901-aca3-4421-a8de-1e84773e9c03" config-ref="HTTP_Request_configuration" url="http://sys-car-api.us-e2.cloudhub.io/api/cars/{carName}" responseTimeout="80000000">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"carName" : attributes.uriParams.carName
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"source" : attributes.queryParams.source,
+	"destination" : attributes.queryParams.destination
+}]]]></http:query-params>
+		</http:request>
+	</flow>
+	<flow name="bookFlight" doc:id="5e8029bf-c672-492a-9614-36375e9f45ad" >
+		<http:request method="POST" doc:name="bookFlight" doc:id="00d76084-dd89-4fe6-8b06-af5ecc55caab" config-ref="HTTP_Request_configuration" url="http://sys-flight-app.us-e2.cloudhub.io/api/flights"/>
+		<logger level="INFO" doc:name="Logger" doc:id="da1f198a-60d9-43e2-8457-c6907cef3f2a" />
+	</flow>
+	<flow name="bookCab" doc:id="78da72d8-914a-4653-a5b8-04381f4d75ab" >
+		<http:request method="POST" doc:name="bookCab" doc:id="31e840c2-1733-49fb-a4d9-5a330395b3d0" config-ref="HTTP_Request_configuration" url="http://sys-car-api.us-e2.cloudhub.io/api/cars"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c6e61751-f47d-44f4-85d4-1580d24fd3ef" />
+	</flow>
+	<flow name="bookHotel" doc:id="efa2e79b-5ced-426a-9ff6-9d427bff7c67" >
+		<ee:transform doc:name="Transform Message" doc:id="ef731bfd-a541-49f3-8570-a764c35975f9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Booking added (but not really)"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
