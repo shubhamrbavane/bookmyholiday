@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_55ac4c04_9946_451c_be9a_d49ddd6d36d1_Output_Payload = {|
+  roomID: Number, 
+  hotelName: String, 
+  roomType: String, 
+  price: Number, 
+  rating: Number, 
+  breakfast: String, 
+  cancellation: String
+|}
+
